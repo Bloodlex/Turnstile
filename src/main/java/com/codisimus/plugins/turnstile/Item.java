@@ -1,3 +1,4 @@
+/*
 package com.codisimus.plugins.turnstile;
 
 import java.util.ArrayList;
@@ -11,10 +12,12 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+*/
 /**
  *
  * @author Codisimus
- */
+ *//*
+
 @SerializableAs("TurnstileItem")
 public class Item implements ConfigurationSerializable {
     private int id = 0;
@@ -23,34 +26,40 @@ public class Item implements ConfigurationSerializable {
     private int amount = 1;
     private LinkedList<Enchantment> enchantments = new LinkedList<>();
 
-    /**
+    */
+/**
      *
      * @param id The Material id of the item
      * @param durability The durability of the item
      * @param amount The stack size of the item
-     */
+     *//*
+
     public Item(int id, short durability, int amount) {
         this.id = id;
         this.durability = durability;
         this.amount = amount;
     }
 
-    /**
+    */
+/**
      *
      * @param id The Material id of the item
      * @param enchantments The enchantments on the item
      * @param amount The stack size of the item
-     */
+     *//*
+
     public Item(int id, LinkedList<Enchantment> enchantments, int amount) {
         this.id = id;
         this.enchantments = enchantments;
         this.amount = amount;
     }
 
-    /**
+    */
+/**
      *
      * @param item The ItemStack that will be looted
-     */
+     *//*
+
     public Item(ItemStack item) {
         id = item.getType().getId();
         amount = item.getAmount();
@@ -61,11 +70,13 @@ public class Item implements ConfigurationSerializable {
         }
     }
 
-    /**
+    */
+/**
      * Constructs a new Item from a Configuration Serialized phase
      *
      * @param map The map of data values
-     */
+     *//*
+
     public Item(Map<String, Object> map) {
         id = (Integer) map.get("MaterialID");
         name = (String) map.get("DisplayName");
@@ -131,12 +142,14 @@ public class Item implements ConfigurationSerializable {
         return item;
     }
 
-    /**
+    */
+/**
      * Returns the Enchantments of this Item as a String
      * This String is user friendly
      *
      * @return The String representation of this Item's Enchantments
-     */
+     *//*
+
     public String enchantmentsToString() {
         String string = "";
         for (Enchantment enchantment : enchantments) {
@@ -145,11 +158,13 @@ public class Item implements ConfigurationSerializable {
         return string.isEmpty() ? string : string.substring(1);
     }
 
-    /**
+    */
+/**
      * Returns the Enchantments of this Item as a List of Strings
      *
      * @return The String representation of this Item's Enchantments
-     */
+     *//*
+
     public ArrayList<String> enchantmentsToStrings() {
         ArrayList<String> stringList = new ArrayList<>();
         for (Enchantment enchantment : enchantments) {
@@ -158,11 +173,13 @@ public class Item implements ConfigurationSerializable {
         return stringList;
     }
 
-    /**
+    */
+/**
      * Returns the info of this Item as a String
      *
      * @return The String representation of this Loot
-     */
+     *//*
+
     public String toInfoString() {
         return amount + " of " + Material.getMaterial(id).name()
                 + (!enchantments.isEmpty()
@@ -170,13 +187,15 @@ public class Item implements ConfigurationSerializable {
                    : (durability > 0 ? " with data " + durability : ""));
     }
 
-    /**
+    */
+/**
      * Returns the String representation of this Item
      * The format for a Loot with Enchantments is MaterialID'Enchantment1(level)&Enchantment2(level)...'Amount
      * The format for a Loot without Enchantments is MaterialID'Durability'Amount
      *
      * @return The String representation of this Item
-     */
+     *//*
+
     @Override
     public String toString() {
         return id + "'"
@@ -199,3 +218,4 @@ public class Item implements ConfigurationSerializable {
         return map;
     }
 }
+*/
