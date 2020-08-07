@@ -1,13 +1,5 @@
 package com.codisimus.plugins.turnstile;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -16,6 +8,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.TreeSet;
+import java.util.logging.Level;
 
 public class CommandHandler implements CommandExecutor {
     private static enum ParameterType {
@@ -35,7 +41,7 @@ public class CommandHandler implements CommandExecutor {
         @Override
         public int compare(Object o1, Object o2) {
             return Double.compare(((Method) o1).getAnnotation(CodCommand.class).weight(),
-                                  ((Method) o2).getAnnotation(CodCommand.class).weight());
+                    ((Method) o2).getAnnotation(CodCommand.class).weight());
         }
     };
 
@@ -50,12 +56,19 @@ public class CommandHandler implements CommandExecutor {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface CodCommand {
         String command();
+
         String subcommand() default "";
+
         double weight() default 0;
+
         String[] aliases() default {};
+
         String[] usage() default {};
+
         String permission() default "";
+
         int minArgs() default 0;
+
         int maxArgs() default -1;
     }
 
@@ -158,8 +171,8 @@ public class CommandHandler implements CommandExecutor {
         }
 
         String subcommand = aliases.containsKey(args[0])
-                            ? aliases.getProperty(args[0])
-                            : args[0];
+                ? aliases.getProperty(args[0])
+                : args[0];
         String arg1 = args.length > 1 ? args[1] : null;
         CodCommand meta = findMeta(subcommand, arg1);
         if (meta != null) {
@@ -170,17 +183,17 @@ public class CommandHandler implements CommandExecutor {
             handleCommand(sender, meta, Arrays.copyOfRange(args, index, args.length));
         } else if (subcommand.equals("help")) { //Default 'help' subcommand
             subcommand = arg1 != null && aliases.containsKey(arg1)
-                         ? aliases.getProperty(arg1)
-                         : arg1;
+                    ? aliases.getProperty(arg1)
+                    : arg1;
             switch (args.length) {
-            case 2:
-                meta = findMeta(subcommand, null);
-                break;
-            case 3:
-                meta = findMeta(subcommand, args[2]);
-                break;
-            default:
-                break;
+                case 2:
+                    meta = findMeta(subcommand, null);
+                    break;
+                case 3:
+                    meta = findMeta(subcommand, args[2]);
+                    break;
+                default:
+                    break;
             }
             if (meta != null) {
                 displayUsage(sender, meta);
@@ -197,9 +210,9 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Discovers the correct method to invoke for the given command
      *
-     * @param sender The CommandSender who is executing the command
+     * @param sender  The CommandSender who is executing the command
      * @param command The command which was sent
-     * @param args The arguments which were sent with the command
+     * @param args    The arguments which were sent with the command
      */
     private void handleCommand(CommandSender sender, CodCommand meta, String[] args) {
         try {
@@ -295,7 +308,7 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Verifies that the argument is of the given class
      *
-     * @param argument The argument that was given
+     * @param argument  The argument that was given
      * @param parameter The Class that the argument should be
      * @return true if the argument correctly represents the given Class
      */
@@ -304,37 +317,37 @@ public class CommandHandler implements CommandExecutor {
             ParameterType type = ParameterType.getType(parameter);
 
             switch (type) {
-            case STRING:
-                return argument;
-            case INT:
-                return Integer.parseInt(argument);
-            case DOUBLE:
-                return Double.parseDouble(argument);
-            case BOOLEAN:
-                switch (argument) {
-                case "true":
-                case "on":
-                case "yes":
-                    return true;
-                case "false":
-                case "off":
-                case "no":
-                    return false;
+                case STRING:
+                    return argument;
+                case INT:
+                    return Integer.parseInt(argument);
+                case DOUBLE:
+                    return Double.parseDouble(argument);
+                case BOOLEAN:
+                    switch (argument) {
+                        case "true":
+                        case "on":
+                        case "yes":
+                            return true;
+                        case "false":
+                        case "off":
+                        case "no":
+                            return false;
+                        default:
+                            return null;
+                    }
+                case MATERIAL:
+                    return argument.matches("[0-9]+")
+                            ? Material.getMaterial(Integer.parseInt(argument))
+                            : Material.matchMaterial(argument);
+                case PLAYER:
+                    return Bukkit.getPlayer(argument);
+                case OFFLINEPLAYER:
+                    return Bukkit.getOfflinePlayer(argument);
+                case TURNSTILE:
+                    return TurnstileMain.findTurnstile(argument);
                 default:
                     return null;
-                }
-            case MATERIAL:
-                return argument.matches("[0-9]+")
-                       ? Material.getMaterial(Integer.parseInt(argument))
-                       : Material.matchMaterial(argument);
-            case PLAYER:
-                return Bukkit.getPlayer(argument);
-            case OFFLINEPLAYER:
-                return Bukkit.getOfflinePlayer(argument);
-            case TURNSTILE:
-                return TurnstileMain.findTurnstile(argument);
-            default:
-                return null;
             }
         } catch (Exception ex) {
             return null;
@@ -344,7 +357,7 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Returns the meta of the given command
      *
-     * @param command The command to retrieve the meta for
+     * @param command    The command to retrieve the meta for
      * @param subcommand The subcommand if any
      * @return The CodCommand or null if none was found
      */
@@ -353,8 +366,8 @@ public class CommandHandler implements CommandExecutor {
             //Check if the commands match
             if (meta.command().equals(command)
                     || (meta.command().equals("&variable")
-                        && !command.equals("&none")
-                        && !command.equals("help"))) {
+                    && !command.equals("&none")
+                    && !command.equals("help"))) {
                 //Check if the subcommands match
                 if (meta.subcommand().isEmpty() || meta.subcommand().equals(subcommand)) {
                     return meta;
@@ -367,7 +380,7 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Returns the meta of the given command
      *
-     * @param command The command to retrieve the meta for
+     * @param command    The command to retrieve the meta for
      * @param subcommand The subcommand if any
      * @return The CodCommand or null if none was found
      */
@@ -397,7 +410,7 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Displays a one line usage of the given command
      *
-     * @param sender The sender to display the command usage to
+     * @param sender  The sender to display the command usage to
      * @param command The given CodCommand
      */
     private void displayOneLiner(CommandSender sender, CodCommand meta) {
@@ -424,7 +437,7 @@ public class CommandHandler implements CommandExecutor {
     /**
      * Displays the usage of the given command
      *
-     * @param sender The sender to display the command usage to
+     * @param sender  The sender to display the command usage to
      * @param command The given CodCommand
      */
     private void displayUsage(CommandSender sender, CodCommand meta) {
