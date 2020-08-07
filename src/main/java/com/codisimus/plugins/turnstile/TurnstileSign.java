@@ -1,7 +1,5 @@
 package com.codisimus.plugins.turnstile;
 
-import java.util.Map;
-import java.util.TreeMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -10,6 +8,9 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A TurnstileSign is a Sign that is linked to a Turnstile
@@ -27,11 +28,11 @@ public class TurnstileSign implements ConfigurationSerializable {
     /**
      * Constructs a new TurnstileSign with the given data
      *
-     * @param sign The Sign object
+     * @param sign      The Sign object
      * @param turnstile The Turnstile that the Sign is linked to
-     * @param line The line of the Sign that holds the data
+     * @param line      The line of the Sign that holds the data
      */
-    public TurnstileSign (Sign sign, Turnstile turnstile, int line) {
+    public TurnstileSign(Sign sign, Turnstile turnstile, int line) {
         this.sign = sign;
         this.turnstile = turnstile;
         this.line = line;
@@ -54,11 +55,21 @@ public class TurnstileSign implements ConfigurationSerializable {
 
             Block block = world.getBlockAt(x, y, z);
             switch (block.getType()) {
-                case SIGN:
-                case WALL_SIGN:
+                case ACACIA_SIGN:
+                case BIRCH_SIGN:
+                case OAK_SIGN:
+                case SPRUCE_SIGN:
+                case JUNGLE_SIGN:
+                case DARK_OAK_SIGN:
+                case ACACIA_WALL_SIGN:
+                case BIRCH_WALL_SIGN:
+                case OAK_WALL_SIGN:
+                case SPRUCE_WALL_SIGN:
+                case JUNGLE_WALL_SIGN:
+                case DARK_OAK_WALL_SIGN:
                     break;
                 default:
-                    TurnstileMain.logger.warning("The block '" + x + ", " + y + ", " + z + "' in '"  + world + "' is not a SIGN and has been unlinked.");
+                    TurnstileMain.logger.warning("The block '" + x + ", " + y + ", " + z + "' in '" + world + "' is not a SIGN and has been unlinked.");
                     TurnstileMain.logger.warning("THIS SIGN UNLINKING IS PERMANANT IF YOU MODIFY THIS TURNSTILE IN ANYWAY!");
             }
 
@@ -77,16 +88,16 @@ public class TurnstileSign implements ConfigurationSerializable {
 
     /**
      * Updates the Turnstile Sign when it becomes either locked, free, or open
-     * 
+     *
      * @return The BukkitTask to be run
      */
     public BukkitTask tickListenerTask() {
         final World world = Bukkit.getWorld(turnstile.world);
 
         //Repeat every second
-    	return new BukkitRunnable() {
+        return new BukkitRunnable() {
             @Override
-    	    public void run() {
+            public void run() {
                 sign = (Sign) sign.getBlock().getState();
                 long time = world.getTime();
 
@@ -99,8 +110,8 @@ public class TurnstileSign implements ConfigurationSerializable {
                 }
 
                 sign.update();
-    	    }
-    	}.runTaskTimer(TurnstileMain.plugin, 0L, 20L);
+            }
+        }.runTaskTimer(TurnstileMain.plugin, 0L, 20L);
     }
 
     /**
@@ -150,7 +161,7 @@ public class TurnstileSign implements ConfigurationSerializable {
      */
     @Override
     public String toString() {
-        return turnstile.name+"'" + sign.getX() + "'" + sign.getY()
+        return turnstile.name + "'" + sign.getX() + "'" + sign.getY()
                 + "'" + sign.getZ() + "'" + line;
     }
 

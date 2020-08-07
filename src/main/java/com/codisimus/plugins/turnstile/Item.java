@@ -52,7 +52,7 @@ public class Item implements ConfigurationSerializable {
      * @param item The ItemStack that will be looted
      */
     public Item(ItemStack item) {
-        id = item.getTypeId();
+        id = item.getType().getId();
         amount = item.getAmount();
         enchantments.addAll(item.getEnchantments().keySet());
 
@@ -84,7 +84,7 @@ public class Item implements ConfigurationSerializable {
         ItemStack[] stacks = inventory.getContents();
         for (int i=0; i < stacks.length; i++) {
             if (stacks[i] != null) {
-                if (stacks[i].getTypeId() == id) {
+                if (stacks[i].getType().getId() == id) {
                     if (!enchantments.isEmpty()) {
                         //Make sure all enchantments are present
                         boolean missingEnchantment = false;

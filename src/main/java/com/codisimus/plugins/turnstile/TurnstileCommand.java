@@ -1,10 +1,6 @@
 package com.codisimus.plugins.turnstile;
 
 import com.codisimus.plugins.turnstile.CommandHandler.CodCommand;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
@@ -15,6 +11,11 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Executes Player Commands
  *
@@ -24,13 +25,13 @@ public class TurnstileCommand {
     private static final EnumSet<Material> SEE_THROUGH = EnumSet.of(Material.AIR);
 
     @CodCommand(
-        command = "make",
-        weight = 1,
-        aliases = {"create", "new"},
-        usage = {
-            "§2<command> <Name>§b Make target Block into a Turnstile"
-        },
-        permission = "turnstile.make"
+            command = "make",
+            weight = 1,
+            aliases = {"create", "new"},
+            usage = {
+                    "§2<command> <Name>§b Make target Block into a Turnstile"
+            },
+            permission = "turnstile.make"
     )
     public boolean make(Player player, String name) {
         //Cancel if the Turnstile already exists
@@ -41,21 +42,41 @@ public class TurnstileCommand {
 
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
         switch (block.getType()) {
-        case FENCE:
-        case TRAP_DOOR:
-        case FENCE_GATE:
-            break;
+            case OAK_FENCE:
+            case ACACIA_FENCE:
+            case JUNGLE_FENCE:
+            case SPRUCE_FENCE:
+            case BIRCH_FENCE:
+            case DARK_OAK_FENCE:
 
-        case IRON_DOOR:
-        case IRON_DOOR_BLOCK:
-        case WOOD_DOOR:
-        case WOODEN_DOOR:
-            block = TurnstileUtil.getBottomHalf(block);
-            break;
+            case OAK_TRAPDOOR:
+            case ACACIA_TRAPDOOR:
+            case JUNGLE_TRAPDOOR:
+            case SPRUCE_TRAPDOOR:
+            case BIRCH_TRAPDOOR:
+            case DARK_OAK_TRAPDOOR:
 
-        default:
-            player.sendMessage("You must target a Door or Fence.");
-            return true;
+            case OAK_FENCE_GATE:
+            case ACACIA_FENCE_GATE:
+            case JUNGLE_FENCE_GATE:
+            case SPRUCE_FENCE_GATE:
+            case BIRCH_FENCE_GATE:
+            case DARK_OAK_FENCE_GATE:
+                break;
+
+            case IRON_DOOR:
+            case OAK_DOOR:
+            case ACACIA_DOOR:
+            case JUNGLE_DOOR:
+            case SPRUCE_DOOR:
+            case BIRCH_DOOR:
+            case DARK_OAK_DOOR:
+                block = TurnstileUtil.getBottomHalf(block);
+                break;
+
+            default:
+                player.sendMessage("You must target a Door or Fence.");
+                return true;
         }
 
         int price = TurnstileConfig.cost;
@@ -76,13 +97,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "rename",
-        weight = 2,
-        aliases = {"setname"},
-        usage = {
-            "§2<command> [Name] <NewName>§b Rename a Turnstile"
-        },
-        permission = "turnstile.make"
+            command = "rename",
+            weight = 2,
+            aliases = {"setname"},
+            usage = {
+                    "§2<command> [Name] <NewName>§b Rename a Turnstile"
+            },
+            permission = "turnstile.make"
     )
     public boolean rename(Player player, String name) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -93,6 +114,7 @@ public class TurnstileCommand {
             return rename(player, turnstile, name);
         }
     }
+
     @CodCommand(command = "rename", weight = 2.1)
     public boolean rename(CommandSender sender, Turnstile turnstile, String name) {
         Turnstile t = TurnstileMain.findTurnstile(name);
@@ -115,13 +137,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "owner",
-        weight = 3,
-        aliases = {"setowner"},
-        usage = {
-            "§2<command> [Name] <Player>§b Set the Owner of the Turnstile"
-        },
-        permission = "turnstile.set.owner"
+            command = "owner",
+            weight = 3,
+            aliases = {"setowner"},
+            usage = {
+                    "§2<command> [Name] <Player>§b Set the Owner of the Turnstile"
+            },
+            permission = "turnstile.set.owner"
     )
     public boolean owner(Player player, OfflinePlayer newOwner) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -132,6 +154,7 @@ public class TurnstileCommand {
             return owner(player, turnstile, newOwner);
         }
     }
+
     @CodCommand(command = "owner", weight = 3.1)
     public boolean owner(CommandSender sender, Turnstile turnstile, OfflinePlayer newOwner) {
         if (!turnstile.isOwner(sender)) {
@@ -141,19 +164,19 @@ public class TurnstileCommand {
 
         turnstile.owner = newOwner.getName();
         sender.sendMessage("Money from Turnstile " + turnstile.name
-                            + " will go to " + newOwner.getName() + "!");
+                + " will go to " + newOwner.getName() + "!");
         turnstile.save();
         return true;
     }
 
     @CodCommand(
-        command = "bank",
-        weight = 4,
-        aliases = {"setbank"},
-        usage = {
-            "§2<command> [Name] <Player>§b Set the Owner of the Turnstile to a Bank"
-        },
-        permission = "turnstile.set.bank"
+            command = "bank",
+            weight = 4,
+            aliases = {"setbank"},
+            usage = {
+                    "§2<command> [Name] <Player>§b Set the Owner of the Turnstile to a Bank"
+            },
+            permission = "turnstile.set.bank"
     )
     public boolean bank(Player player, String bankName) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -164,6 +187,7 @@ public class TurnstileCommand {
             return bank(player, turnstile, bankName);
         }
     }
+
     @CodCommand(command = "bank", weight = 4.1)
     public boolean bank(CommandSender sender, Turnstile turnstile, String bankName) {
         if (!turnstile.isOwner(sender)) {
@@ -173,35 +197,47 @@ public class TurnstileCommand {
 
         turnstile.owner = "bank:" + bankName;
         sender.sendMessage("Money from Turnstile " + turnstile.name
-                            + " will go to " + bankName + "!");
+                + " will go to " + bankName + "!");
         turnstile.save();
         return true;
     }
 
     @CodCommand(
-        command = "link",
-        weight = 10,
-        aliases = {"+", "button", "chest"},
-        usage = {
-            "§2<command> <Name>§b Link target Block with Turnstile"
-        },
-        permission = "turnstile.make"
+            command = "link",
+            weight = 10,
+            aliases = {"+", "button", "chest"},
+            usage = {
+                    "§2<command> <Name>§b Link target Block with Turnstile"
+            },
+            permission = "turnstile.make"
     )
     public boolean link(Player player, Turnstile turnstile) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
         switch (block.getType()) {
-        case CHEST:
-        case STONE_PLATE:
-        case WOOD_PLATE:
-        case STONE_BUTTON:
-        case WOOD_BUTTON:
-            turnstile.buttons.add(new TurnstileButton(block));
-            break;
+            case CHEST:
+            case STONE_PRESSURE_PLATE:
+            case OAK_PRESSURE_PLATE:
+            case ACACIA_PRESSURE_PLATE:
+            case BIRCH_PRESSURE_PLATE:
+            case DARK_OAK_PRESSURE_PLATE:
+            case JUNGLE_PRESSURE_PLATE:
+            case SPRUCE_PRESSURE_PLATE:
+            case HEAVY_WEIGHTED_PRESSURE_PLATE:
+            case LIGHT_WEIGHTED_PRESSURE_PLATE:
+            case STONE_BUTTON:
+            case BIRCH_BUTTON:
+            case ACACIA_BUTTON:
+            case DARK_OAK_BUTTON:
+            case JUNGLE_BUTTON:
+            case OAK_BUTTON:
+            case SPRUCE_BUTTON:
+                turnstile.buttons.add(new TurnstileButton(block));
+                break;
 
-        default:
-            player.sendMessage("You must link the Turnstile to a Button,"
-                                + "Chest, or Pressure plate");
-            return true;
+            default:
+                player.sendMessage("You must link the Turnstile to a Button,"
+                        + "Chest, or Pressure plate");
+                return true;
         }
 
         player.sendMessage("Succesfully linked to Turnstile " + turnstile.name + "!");
@@ -210,13 +246,13 @@ public class TurnstileCommand {
     }
 
     @CommandHandler.CodCommand(
-        command = "link",
-        subcommand = "npc",
-        weight = 11,
-        usage = {
-            "§2<command> <Name>§b Link selected NPC with specified Turnstile"
-        },
-        permission = "turnstile.link.npc"
+            command = "link",
+            subcommand = "npc",
+            weight = 11,
+            usage = {
+                    "§2<command> <Name>§b Link selected NPC with specified Turnstile"
+            },
+            permission = "turnstile.link.npc"
     )
     public void linkNPC(CommandSender sender, Turnstile turnstile) {
         NPC npc = CitizensAPI.getDefaultNPCSelector().getSelected(sender);
@@ -232,13 +268,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "unlink",
-        weight = 12,
-        aliases = {"-"},
-        usage = {
-            "§2<command>§b Unlink target Block with Turnstile"
-        },
-        permission = "turnstile.make"
+            command = "unlink",
+            weight = 12,
+            aliases = {"-"},
+            usage = {
+                    "§2<command>§b Unlink target Block with Turnstile"
+            },
+            permission = "turnstile.make"
     )
     public boolean unlink(Player player) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -268,13 +304,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "delete",
-        weight = 13,
-        aliases = {"destroy", "remove"},
-        usage = {
-            "§2<command> [Name]§b Delete Turnstile"
-        },
-        permission = "turnstile.make"
+            command = "delete",
+            weight = 13,
+            aliases = {"destroy", "remove"},
+            usage = {
+                    "§2<command> [Name]§b Delete Turnstile"
+            },
+            permission = "turnstile.make"
     )
     public boolean delete(CommandSender sender, Turnstile turnstile) {
         if (!turnstile.isOwner(sender)) {
@@ -288,13 +324,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "list",
-        weight = 20,
-        aliases = {"all"},
-        usage = {
-            "§2<command>§b List all Turnstiles"
-        },
-        permission = "turnstile.list"
+            command = "list",
+            weight = 20,
+            aliases = {"all"},
+            usage = {
+                    "§2<command>§b List all Turnstiles"
+            },
+            permission = "turnstile.list"
     )
     public boolean list(CommandSender sender) {
         StringBuilder sb = new StringBuilder();
@@ -310,13 +346,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "info",
-        weight = 21,
-        aliases = {"name"},
-        usage = {
-            "§2<command> [Name]§b Display info of Turnstile"
-        },
-        permission = "turnstile.info"
+            command = "info",
+            weight = 21,
+            aliases = {"name"},
+            usage = {
+                    "§2<command> [Name]§b Display info of Turnstile"
+            },
+            permission = "turnstile.info"
     )
     public boolean info(Player player, String name) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -327,6 +363,7 @@ public class TurnstileCommand {
             return info(player, turnstile, name);
         }
     }
+
     @CodCommand(command = "info", weight = 21.1)
     public boolean info(CommandSender sender, Turnstile turnstile, String name) {
         if (!turnstile.isOwner(sender)) {
@@ -338,21 +375,21 @@ public class TurnstileCommand {
         sender.sendMessage("Name: " + turnstile.name);
         sender.sendMessage("Owner: " + turnstile.owner);
         sender.sendMessage("Location: " + turnstile.world + "'" + turnstile.x
-                            + "'" + turnstile.y + "'" + turnstile.z);
+                + "'" + turnstile.y + "'" + turnstile.z);
         sender.sendMessage("Items: " + turnstile.itemsToInfoString());
 
         //Only display if an Economy plugin is present
         if (Econ.economy != null) {
             sender.sendMessage("Price: " + Econ.format(turnstile.price)
-                                + ", NoFraud: " + turnstile.noFraud);
+                    + ", NoFraud: " + turnstile.noFraud);
             sender.sendMessage("MoneyEarned: " + turnstile.moneyEarned
-                                + ", ItemsEarned: " + turnstile.itemsEarned);
+                    + ", ItemsEarned: " + turnstile.itemsEarned);
             sender.sendMessage("Free: " + turnstile.freeStart
-                                + "-" + turnstile.freeEnd);
+                    + "-" + turnstile.freeEnd);
         }
 
         sender.sendMessage("Locked: " + turnstile.lockedStart
-                            + "-" + turnstile.lockedEnd);
+                + "-" + turnstile.lockedEnd);
         sender.sendMessage("NoFraud: " + turnstile.noFraud);
 
         if (turnstile.access == null) {
@@ -364,7 +401,7 @@ public class TurnstileCommand {
         }
 
         String buttons = "Buttons:  ";
-        for (TurnstileButton button: turnstile.buttons) {
+        for (TurnstileButton button : turnstile.buttons) {
             buttons += button.toString() + ", ";
         }
 
@@ -373,13 +410,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "reload",
-        weight = 22,
-        aliases = {"rl"},
-        usage = {
-            "§2<command>§b Reload Turnstile Plugin"
-        },
-        permission = "turnstile.rl"
+            command = "reload",
+            weight = 22,
+            aliases = {"rl"},
+            usage = {
+                    "§2<command>§b Reload Turnstile Plugin"
+            },
+            permission = "turnstile.rl"
     )
     public boolean reload(CommandSender sender) {
         TurnstileMain.rl(sender);
@@ -387,12 +424,12 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "collect",
-        weight = 23,
-        usage = {
-            "§2<command> [Name]§b Retrieve items from the target Turnstile chest"
-        },
-        permission = "turnstile.collect"
+            command = "collect",
+            weight = 23,
+            usage = {
+                    "§2<command> [Name]§b Retrieve items from the target Turnstile chest"
+            },
+            permission = "turnstile.collect"
     )
     public boolean collect(Player player) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -413,27 +450,27 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "sign",
-        weight = 24,
-        usage = {
-            "§e     Turnstile Sign Help Page:",
-            "§2Turnstile Signs can automatically update information",
-            "§2Each Sign can display two pieces of information such as:",
-            "§2Name:§b The name of the Turnstile",
-            "§2Price:§b The amount of money to use the Turnstile",
-            "§2Cost:§b The item cost to use the Turnstile",
-            "§2Counter:§b The amount of Players who used the Turnstile",
-            "§2Money:§b The amount of money the Turnstile has earned",
-            "§2Items:§b The amount of items the Turnstile has earned",
-            "§2Access:§b Whether the Turnstile is public or private",
-            "§2Status:§b Whether the Turnstile is open, free, or locked",
-            "§2Turnstile Signs are created using the following format:",
-            "§b    ts link",
-            "§b  <Turnstile Name>",
-            "§b<Information type 1>",
-            "§b<Information type 2>"
-        },
-        permission = "turnstile.sign"
+            command = "sign",
+            weight = 24,
+            usage = {
+                    "§e     Turnstile Sign Help Page:",
+                    "§2Turnstile Signs can automatically update information",
+                    "§2Each Sign can display two pieces of information such as:",
+                    "§2Name:§b The name of the Turnstile",
+                    "§2Price:§b The amount of money to use the Turnstile",
+                    "§2Cost:§b The item cost to use the Turnstile",
+                    "§2Counter:§b The amount of Players who used the Turnstile",
+                    "§2Money:§b The amount of money the Turnstile has earned",
+                    "§2Items:§b The amount of items the Turnstile has earned",
+                    "§2Access:§b Whether the Turnstile is public or private",
+                    "§2Status:§b Whether the Turnstile is open, free, or locked",
+                    "§2Turnstile Signs are created using the following format:",
+                    "§b    ts link",
+                    "§b  <Turnstile Name>",
+                    "§b<Information type 1>",
+                    "§b<Information type 2>"
+            },
+            permission = "turnstile.sign"
     )
     public boolean sign(CommandSender sender) {
         return false;
@@ -441,15 +478,15 @@ public class TurnstileCommand {
 
 
     @CodCommand(
-        command = "access",
-        weight = 30,
-        usage = {
-            "§2<command> [Name] public§b Allow anyone to open",
-            "§2<command> [Name] private§b Allow no one to open",
-            "§2<command> [Name] <Player>§b Allow a specific player to open",
-            "§2<command> [Name] <Node>§b Require permission to open",
-        },
-        permission = "turnstile.set.access"
+            command = "access",
+            weight = 30,
+            usage = {
+                    "§2<command> [Name] public§b Allow anyone to open",
+                    "§2<command> [Name] private§b Allow no one to open",
+                    "§2<command> [Name] <Player>§b Allow a specific player to open",
+                    "§2<command> [Name] <Node>§b Require permission to open",
+            },
+            permission = "turnstile.set.access"
     )
     public boolean access(Player player, String node) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -460,6 +497,7 @@ public class TurnstileCommand {
             return access(player, turnstile, node);
         }
     }
+
     @CodCommand(command = "access", weight = 30.1)
     public boolean access(CommandSender sender, Turnstile turnstile, String node) {
         if (!turnstile.isOwner(sender)) {
@@ -469,18 +507,18 @@ public class TurnstileCommand {
 
         turnstile.access = node;
         sender.sendMessage("Access to Turnstile " + turnstile.name
-                            + " has been set to " + node + "!");
+                + " has been set to " + node + "!");
         turnstile.save();
         return true;
     }
 
     @CodCommand(
-        command = "free",
-        weight = 40,
-        usage = {
-            "§2<command> [Name] <StartTick> <EndTick>§b Free during timespan"
-        },
-        permission = "turnstile.set.free"
+            command = "free",
+            weight = 40,
+            usage = {
+                    "§2<command> [Name] <StartTick> <EndTick>§b Free during timespan"
+            },
+            permission = "turnstile.set.free"
     )
     public boolean free(Player player, int start, int end) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -491,6 +529,7 @@ public class TurnstileCommand {
             return free(player, turnstile, start, end);
         }
     }
+
     @CodCommand(command = "free", weight = 40.1)
     public boolean free(CommandSender sender, Turnstile turnstile, int start, int end) {
         if (!turnstile.isOwner(sender)) {
@@ -502,19 +541,19 @@ public class TurnstileCommand {
         turnstile.lockedEnd = end;
 
         sender.sendMessage("Turnstile " + turnstile.name
-                            + " is free to use from " + start
-                            + " to " + end + "!");
+                + " is free to use from " + start
+                + " to " + end + "!");
         turnstile.save();
         return true;
     }
 
     @CodCommand(
-        command = "locked",
-        weight = 41,
-        usage = {
-            "§2<command> [Name] <StartTick> <EndTick>§b Locked during timespan"
-        },
-        permission = "turnstile.set.locked"
+            command = "locked",
+            weight = 41,
+            usage = {
+                    "§2<command> [Name] <StartTick> <EndTick>§b Locked during timespan"
+            },
+            permission = "turnstile.set.locked"
     )
     public boolean locked(Player player, int start, int end) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -525,6 +564,7 @@ public class TurnstileCommand {
             return locked(player, turnstile, start, end);
         }
     }
+
     @CodCommand(command = "locked", weight = 41.1)
     public boolean locked(CommandSender sender, Turnstile turnstile, int start, int end) {
         if (!turnstile.isOwner(sender)) {
@@ -536,18 +576,18 @@ public class TurnstileCommand {
         turnstile.lockedEnd = end;
 
         sender.sendMessage("Turnstile " + turnstile.name + " is locked from "
-                            + start + " to " + end + "!");
+                + start + " to " + end + "!");
         turnstile.save();
         return true;
     }
 
     @CodCommand(
-        command = "cooldown",
-        weight = 42,
-        usage = {
-            "§2<command> [Name]§b Set the cooldown options"
-        },
-        permission = "turnstile.set.cooldown"
+            command = "cooldown",
+            weight = 42,
+            usage = {
+                    "§2<command> [Name]§b Set the cooldown options"
+            },
+            permission = "turnstile.set.cooldown"
     )
     public boolean cooldown(Player player) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -558,6 +598,7 @@ public class TurnstileCommand {
             return cooldown(player, turnstile);
         }
     }
+
     @CodCommand(command = "cooldown", weight = 42.1)
     public boolean cooldown(CommandSender sender, Turnstile turnstile) {
         if (!turnstile.isOwner(sender)) {
@@ -570,12 +611,12 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "nofraud",
-        weight = 43,
-        usage = {
-            "§2<command> <true|false>§b Set noFraud mode"
-        },
-        permission = "turnstile.set.nofraud"
+            command = "nofraud",
+            weight = 43,
+            usage = {
+                    "§2<command> <true|false>§b Set noFraud mode"
+            },
+            permission = "turnstile.set.nofraud"
     )
     public boolean noFraud(Player player, boolean bool) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -586,6 +627,7 @@ public class TurnstileCommand {
             return noFraud(player, turnstile, bool);
         }
     }
+
     @CodCommand(command = "cooldown", weight = 42.1)
     public boolean noFraud(CommandSender sender, Turnstile turnstile, boolean bool) {
         if (!turnstile.isOwner(sender)) {
@@ -613,13 +655,13 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "price",
-        weight = 50,
-        aliases = {"cost"},
-        usage = {
-            "§2<command> [Name] <Amount>§b Set the cost of the Turnstile"
-        },
-        permission = "turnstile.set.price"
+            command = "price",
+            weight = 50,
+            aliases = {"cost"},
+            usage = {
+                    "§2<command> [Name] <Amount>§b Set the cost of the Turnstile"
+            },
+            permission = "turnstile.set.price"
     )
     public boolean price(Player player) {
         Block block = player.getTargetBlock(SEE_THROUGH, 10);
@@ -630,6 +672,7 @@ public class TurnstileCommand {
             return cooldown(player, turnstile);
         }
     }
+
     @CodCommand(command = "price", weight = 50.1)
     public boolean price(CommandSender sender, Turnstile turnstile, int price) {
         if (!turnstile.isOwner(sender)) {
@@ -639,30 +682,30 @@ public class TurnstileCommand {
 
         turnstile.price = price;
         sender.sendMessage("Price of Turnstile " + turnstile.name
-                            + " has been set to " + price + "!");
+                + " has been set to " + price + "!");
         return true;
     }
 
     @CodCommand(
-        command = "add",
-        subcommand = "hand",
-        weight = 51,
-        aliases = {"+"},
-        usage = {
-            "§e     Turnstile Manage Item Price Help Page:",
-            "§5A Parameter starts with the 1 character §2id",
-            "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
-            "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
-            "§2#§f: §5The amount of the item to be payed ex. §6#10",
-            "§2d§f: §5The data/durability value of the item ex. §6d5",
-            "§2e§f: §5The item enchantment ex. §6earrow_fire",
-            "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
-            "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
-            "§bex. §6<command> hand #16 tMainGate",
-            "§bex. §6<command> wool d5",
-            "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
-        },
-        permission = "turnstile.set.price"
+            command = "add",
+            subcommand = "hand",
+            weight = 51,
+            aliases = {"+"},
+            usage = {
+                    "§e     Turnstile Manage Item Price Help Page:",
+                    "§5A Parameter starts with the 1 character §2id",
+                    "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
+                    "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
+                    "§2#§f: §5The amount of the item to be payed ex. §6#10",
+                    "§2d§f: §5The data/durability value of the item ex. §6d5",
+                    "§2e§f: §5The item enchantment ex. §6earrow_fire",
+                    "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
+                    "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
+                    "§bex. §6<command> hand #16 tMainGate",
+                    "§bex. §6<command> wool d5",
+                    "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
+            },
+            permission = "turnstile.set.price"
     )
     public boolean addHand(Player player, String[] args) {
         setItem(player, false, player.getEquipment().getItemInMainHand(), args);
@@ -670,24 +713,24 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "add",
-        weight = 52,
-        aliases = {"+"},
-        usage = {
-            "§e     Turnstile Manage Item Price Help Page:",
-            "§5A Parameter starts with the 1 character §2id",
-            "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
-            "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
-            "§2#§f: §5The amount of the item to be payed ex. §6#10",
-            "§2d§f: §5The data/durability value of the item ex. §6d5",
-            "§2e§f: §5The item enchantment ex. §6earrow_fire",
-            "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
-            "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
-            "§bex. §6<command> hand #16 tMainGate",
-            "§bex. §6<command> wool d5",
-            "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
-        },
-        permission = "turnstile.set.price"
+            command = "add",
+            weight = 52,
+            aliases = {"+"},
+            usage = {
+                    "§e     Turnstile Manage Item Price Help Page:",
+                    "§5A Parameter starts with the 1 character §2id",
+                    "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
+                    "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
+                    "§2#§f: §5The amount of the item to be payed ex. §6#10",
+                    "§2d§f: §5The data/durability value of the item ex. §6d5",
+                    "§2e§f: §5The item enchantment ex. §6earrow_fire",
+                    "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
+                    "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
+                    "§bex. §6<command> hand #16 tMainGate",
+                    "§bex. §6<command> wool d5",
+                    "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
+            },
+            permission = "turnstile.set.price"
     )
     public boolean add(CommandSender sender, Material mat, String[] args) {
         setItem(sender, true, new ItemStack(mat), args);
@@ -695,25 +738,25 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "remove",
-        subcommand = "hand",
-        weight = 53,
-        aliases = {"+"},
-        usage = {
-            "§e     Turnstile Manage Item Price Help Page:",
-            "§5A Parameter starts with the 1 character §2id",
-            "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
-            "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
-            "§2#§f: §5The amount of the item to be payed ex. §6#10",
-            "§2d§f: §5The data/durability value of the item ex. §6d5",
-            "§2e§f: §5The item enchantment ex. §6earrow_fire",
-            "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
-            "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
-            "§bex. §6<command> hand #16 tMainGate",
-            "§bex. §6<command> wool d5",
-            "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
-        },
-        permission = "turnstile.set.price"
+            command = "remove",
+            subcommand = "hand",
+            weight = 53,
+            aliases = {"+"},
+            usage = {
+                    "§e     Turnstile Manage Item Price Help Page:",
+                    "§5A Parameter starts with the 1 character §2id",
+                    "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
+                    "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
+                    "§2#§f: §5The amount of the item to be payed ex. §6#10",
+                    "§2d§f: §5The data/durability value of the item ex. §6d5",
+                    "§2e§f: §5The item enchantment ex. §6earrow_fire",
+                    "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
+                    "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
+                    "§bex. §6<command> hand #16 tMainGate",
+                    "§bex. §6<command> wool d5",
+                    "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
+            },
+            permission = "turnstile.set.price"
     )
     public boolean removeHand(Player player, String[] args) {
         setItem(player, false, player.getEquipment().getItemInMainHand(), args);
@@ -721,24 +764,24 @@ public class TurnstileCommand {
     }
 
     @CodCommand(
-        command = "remove",
-        weight = 54,
-        aliases = {"-"},
-        usage = {
-            "§e     Turnstile Manage Item Price Help Page:",
-            "§5A Parameter starts with the 1 character §2id",
-            "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
-            "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
-            "§2#§f: §5The amount of the item to be payed ex. §6#10",
-            "§2d§f: §5The data/durability value of the item ex. §6d5",
-            "§2e§f: §5The item enchantment ex. §6earrow_fire",
-            "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
-            "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
-            "§bex. §6<command> hand #16 tMainGate",
-            "§bex. §6<command> wool d5",
-            "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
-        },
-        permission = "turnstile.set.price"
+            command = "remove",
+            weight = 54,
+            aliases = {"-"},
+            usage = {
+                    "§e     Turnstile Manage Item Price Help Page:",
+                    "§5A Parameter starts with the 1 character §2id",
+                    "§2t§f: §5The Name of the Turnstile ex. §6pMainGate",
+                    "§bIf Turnstile is not specified then the Turnstile linked to the target Block will be affected",
+                    "§2#§f: §5The amount of the item to be payed ex. §6#10",
+                    "§2d§f: §5The data/durability value of the item ex. §6d5",
+                    "§2e§f: §5The item enchantment ex. §6earrow_fire",
+                    "§bEnchantment levels can be added. ex. §6arrow_fire(2)",
+                    "§2<command> <Item|ID|hand> [Parameter1] [Parameter2]...",
+                    "§bex. §6<command> hand #16 tMainGate",
+                    "§bex. §6<command> wool d5",
+                    "§bex. §6<command> diamond_sword efire_aspect(2) edamage_all",
+            },
+            permission = "turnstile.set.price"
     )
     public boolean remove(CommandSender sender, Material mat, String[] args) {
         setItem(sender, false, new ItemStack(mat), args);
@@ -754,40 +797,40 @@ public class TurnstileCommand {
             char c = args[i].charAt(0);
             String s = args[i].substring(1);
             switch (c) {
-            case 't': //Turnstile Name
-                name = s;
-                break;
+                case 't': //Turnstile Name
+                    name = s;
+                    break;
 
-            case '#': //Amount
-                try {
-                    item.setAmount(Integer.parseInt(s));
-                } catch (Exception ex) {
-                    sender.sendMessage("§6" + s + "§4 is not a valid amount");
+                case '#': //Amount
+                    try {
+                        item.setAmount(Integer.parseInt(s));
+                    } catch (Exception ex) {
+                        sender.sendMessage("§6" + s + "§4 is not a valid amount");
+                        return;
+                    }
+                    break;
+
+                case 'e': //Enchantment
+                    Map<Enchantment, Integer> enchantments = getEnchantments(s);
+                    if (enchantments == null) {
+                        sender.sendMessage("§6" + s + "§4 is not a valid enchantment");
+                        return;
+                    }
+                    item.addUnsafeEnchantments(enchantments);
+                    break;
+
+                case 'd': //Durability
+                    try {
+                        item.setDurability(Short.parseShort(s));
+                    } catch (Exception ex) {
+                        sender.sendMessage("§6" + s + "§4 is not a valid data/durability value");
+                        return;
+                    }
+                    break;
+
+                default: //Invalid Parameter
+                    sender.sendMessage("§6" + c + "§4 is not a valid parameter ID");
                     return;
-                }
-                break;
-
-            case 'e': //Enchantment
-                Map<Enchantment, Integer> enchantments = getEnchantments(s);
-                if (enchantments == null) {
-                    sender.sendMessage("§6" + s + "§4 is not a valid enchantment");
-                    return;
-                }
-                item.addUnsafeEnchantments(enchantments);
-                break;
-
-            case 'd': //Durability
-                try {
-                    item.setDurability(Short.parseShort(s));
-                } catch (Exception ex) {
-                    sender.sendMessage("§6" + s + "§4 is not a valid data/durability value");
-                    return;
-                }
-                break;
-
-            default: //Invalid Parameter
-                sender.sendMessage("§6" + c + "§4 is not a valid parameter ID");
-                return;
             }
 
             i++;
@@ -796,7 +839,7 @@ public class TurnstileCommand {
         Turnstile turnstile;
         if (name != null) {
             turnstile = TurnstileMain.findTurnstile(name);
-            if (turnstile == null ) {
+            if (turnstile == null) {
                 sender.sendMessage("§4Turnstile §6" + name + "§4 does not exist.");
                 return;
             }
@@ -830,7 +873,7 @@ public class TurnstileCommand {
     public static Map<Enchantment, Integer> getEnchantments(String string) {
         Map<Enchantment, Integer> enchantments = new HashMap<>();
         try {
-            for (String split: string.split("&")) {
+            for (String split : string.split("&")) {
                 Enchantment enchantment = null;
                 int level = -1;
 
@@ -840,7 +883,7 @@ public class TurnstileCommand {
                     split = split.substring(0, index);
                 }
 
-                for (Enchantment enchant: Enchantment.values()) {
+                for (Enchantment enchant : Enchantment.values()) {
                     if (enchant.getName().equalsIgnoreCase(split)) {
                         enchantment = enchant;
                     }

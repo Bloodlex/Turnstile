@@ -1,0 +1,6 @@
+name: Turnstile
+main: com.codisimus.plugins.turnstile.Turnstile
+version: 2.7.1
+softdepend: [Vault, Citizens]
+author: Codisimus
+api-version: 1.15.2

@@ -1,11 +1,5 @@
 package com.codisimus.plugins.turnstile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.bukkit.Bukkit;
@@ -22,6 +16,20 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Button;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.util.logging.Level;
 
 /**
  * A Turnstile is a fence or door used as a gate.
@@ -80,11 +88,11 @@ public class Turnstile implements ConfigurationSerializable {
     /**
      * Constructs a new Turnstile
      *
-     * @param name The name of the Turnstile which cannot already exist
+     * @param name  The name of the Turnstile which cannot already exist
      * @param owner The Player who is creating the Turnstile and also the default owner
      * @param block The Block of the Trendula
      */
-    public Turnstile (String name, String owner, Block block) {
+    public Turnstile(String name, String owner, Block block) {
         this.name = name;
         this.owner = owner;
         world = block.getWorld().getName();
@@ -101,11 +109,16 @@ public class Turnstile implements ConfigurationSerializable {
      */
     public boolean checkOneWay(Block from) {
         switch (openedFrom) {
-        case NORTH: return from.getZ() < z;
-        case SOUTH: return from.getZ() > z;
-        case WEST: return from.getX() < x;
-        case EAST: return from.getX() > x;
-        default: return true;
+            case NORTH:
+                return from.getZ() < z;
+            case SOUTH:
+                return from.getZ() > z;
+            case WEST:
+                return from.getX() < x;
+            case EAST:
+                return from.getX() > x;
+            default:
+                return true;
         }
     }
 
@@ -113,7 +126,7 @@ public class Turnstile implements ConfigurationSerializable {
      * Checks the contents of the Inventory and compares it to the item, amount, and durability
      *
      * @param inventory The Inventory being checked
-     * @param player The Player who activated the Chest
+     * @param player    The Player who activated the Chest
      */
     public void checkContents(Inventory inventory, Player player) {
         HashSet<Integer> flagForDelete = new HashSet<>();
@@ -140,7 +153,7 @@ public class Turnstile implements ConfigurationSerializable {
         itemsEarned++;
 
         //Increment the counter on linked Signs
-        for (TurnstileSign sign: TurnstileMain.itemSigns) {
+        for (TurnstileSign sign : TurnstileMain.itemSigns) {
             if (sign.turnstile.equals(this)) {
                 sign.incrementCounter();
             }
@@ -200,7 +213,7 @@ public class Turnstile implements ConfigurationSerializable {
         if (!addedToCooldown.isEmpty() && !addedToCooldown.equals(playerName)) {
             if (debug) {
                 TurnstileMain.logger.warning(name + " Debug: " + playerName
-                                    + " is trying to enter a Turnstile that they did no pay for");
+                        + " is trying to enter a Turnstile that they did no pay for");
             }
             player.sendMessage(TurnstileConfig.noFraud);
             return false;
@@ -214,7 +227,7 @@ public class Turnstile implements ConfigurationSerializable {
         if (player.hasPermission("turnstile.openfree")) {
             if (debug) {
                 TurnstileMain.logger.warning(name + " Debug: " + playerName
-                                    + " is not charged to open Turnstiles");
+                        + " is not charged to open Turnstiles");
                 player.sendMessage("You are not charged to open Turnstiles");
             }
             return true;
@@ -222,8 +235,8 @@ public class Turnstile implements ConfigurationSerializable {
 
         if (playerName.equals(owner)) {
             if (Turnstile.debug) {
-                TurnstileMain.logger.warning(name + " Debug: "+ playerName
-                                + " is not charged because they are the Owner");
+                TurnstileMain.logger.warning(name + " Debug: " + playerName
+                        + " is not charged because they are the Owner");
                 player.sendMessage("You are not charged to open your own Turnstile");
             }
             return true;
@@ -233,7 +246,7 @@ public class Turnstile implements ConfigurationSerializable {
         if (price == -411) {
             if (debug) {
                 TurnstileMain.logger.warning(name + " Debug: " + playerName
-                                    + "'s account will be set to 0");
+                        + "'s account will be set to 0");
             }
 
             Econ.economy.withdrawPlayer(player, Econ.economy.getBalance(player));
@@ -253,7 +266,7 @@ public class Turnstile implements ConfigurationSerializable {
         if (!Econ.charge(player, owner, price)) {
             if (debug) {
                 TurnstileMain.logger.warning(name + " Debug: " + playerName
-                                    + " cannot afford " + Econ.format(price));
+                        + " cannot afford " + Econ.format(price));
             }
 
             player.sendMessage(TurnstileConfig.notEnoughMoney);
@@ -269,7 +282,7 @@ public class Turnstile implements ConfigurationSerializable {
         moneyEarned += price;
 
         //Increment the amount of money earned on linked Signs
-        for (TurnstileSign sign: TurnstileMain.moneySigns) {
+        for (TurnstileSign sign : TurnstileMain.moneySigns) {
             if (sign.turnstile.equals(this)) {
                 sign.incrementEarned();
             }
@@ -293,45 +306,45 @@ public class Turnstile implements ConfigurationSerializable {
         }
 
         switch (access) {
-        case "public":
-            if (debug) {
-                TurnstileMain.logger.warning(name + " Debug: Turnstile is public");
-            }
-        case "private":
-            if (debug) {
-                TurnstileMain.logger.warning(name + " Debug: Turnstile is private");
-                TurnstileMain.logger.warning(name + " Debug: " + playerName
-                        + (isOwner(player) ? " is an owner" : " is not an owner"));
-            }
-
-            if (!isOwner(player)) {
-                player.sendMessage(TurnstileConfig.privateTurnstile);
-                return false;
-            }
-        default: //Turnstile has limited access
-            if (debug) {
-                TurnstileMain.logger.warning(name + " Debug: Turnstile has limited access");
-            }
-
-            boolean hasAccess = false;
-            for (String node : access.split(" ")) {
-                if (node.equalsIgnoreCase(playerName)) {
-                    if (debug) {
-                        TurnstileMain.logger.warning(name + " Debug: " + playerName + " is on the access list");
-                    }
-                    break;
-                } else if (player.hasPermission(node)) {
-                    hasAccess = true;
-                    break;
-                }
-                    
-            }
-            if (!hasAccess) {
+            case "public":
                 if (debug) {
-                    TurnstileMain.logger.warning(name + " Debug: " + playerName + " is not on the access list");
+                    TurnstileMain.logger.warning(name + " Debug: Turnstile is public");
                 }
-                player.sendMessage(TurnstileConfig.privateTurnstile);
-            }
+            case "private":
+                if (debug) {
+                    TurnstileMain.logger.warning(name + " Debug: Turnstile is private");
+                    TurnstileMain.logger.warning(name + " Debug: " + playerName
+                            + (isOwner(player) ? " is an owner" : " is not an owner"));
+                }
+
+                if (!isOwner(player)) {
+                    player.sendMessage(TurnstileConfig.privateTurnstile);
+                    return false;
+                }
+            default: //Turnstile has limited access
+                if (debug) {
+                    TurnstileMain.logger.warning(name + " Debug: Turnstile has limited access");
+                }
+
+                boolean hasAccess = false;
+                for (String node : access.split(" ")) {
+                    if (node.equalsIgnoreCase(playerName)) {
+                        if (debug) {
+                            TurnstileMain.logger.warning(name + " Debug: " + playerName + " is on the access list");
+                        }
+                        break;
+                    } else if (player.hasPermission(node)) {
+                        hasAccess = true;
+                        break;
+                    }
+
+                }
+                if (!hasAccess) {
+                    if (debug) {
+                        TurnstileMain.logger.warning(name + " Debug: " + playerName + " is not on the access list");
+                    }
+                    player.sendMessage(TurnstileConfig.privateTurnstile);
+                }
         }
 
         if (days == 0 && hours == 0 && minutes == 0 && seconds == 0) { //Does not use cooldown
@@ -581,26 +594,39 @@ public class Turnstile implements ConfigurationSerializable {
 
         //Determine the type of the Block to find out the direction opened from
         switch (block.getType()) {
-        case WOOD_BUTTON: //Fall through
-        case STONE_BUTTON:
-            openedFrom = ((Button) block.getState().getData()).getFacing();
-            break;
+            case BIRCH_BUTTON:
+            case ACACIA_BUTTON:
+            case DARK_OAK_BUTTON:
+            case JUNGLE_BUTTON:
+            case OAK_BUTTON:
+            case SPRUCE_BUTTON: //Fall through
+            case STONE_BUTTON:
+                openedFrom = ((Button) block.getState().getData()).getFacing();
+                break;
 
-        case WOOD_PLATE: //Fall through
-        case STONE_PLATE:
-            if (block.getZ() < z) {
-                openedFrom = BlockFace.NORTH;
-            } else if (block.getZ() > z) {
-                openedFrom = BlockFace.SOUTH;
-            } else if (block.getX() < x) {
-                openedFrom = BlockFace.WEST;
-            } else if (block.getX() > x) {
-                openedFrom = BlockFace.EAST;
-            } else {
-                openedFrom = BlockFace.SELF;
-            }
+            case STONE_PRESSURE_PLATE:
+            case OAK_PRESSURE_PLATE:
+            case ACACIA_PRESSURE_PLATE:
+            case BIRCH_PRESSURE_PLATE:
+            case DARK_OAK_PRESSURE_PLATE:
+            case JUNGLE_PRESSURE_PLATE:
+            case SPRUCE_PRESSURE_PLATE:
+            case HEAVY_WEIGHTED_PRESSURE_PLATE:
+            case LIGHT_WEIGHTED_PRESSURE_PLATE:
+                if (block.getZ() < z) {
+                    openedFrom = BlockFace.NORTH;
+                } else if (block.getZ() > z) {
+                    openedFrom = BlockFace.SOUTH;
+                } else if (block.getX() < x) {
+                    openedFrom = BlockFace.WEST;
+                } else if (block.getX() > x) {
+                    openedFrom = BlockFace.EAST;
+                } else {
+                    openedFrom = BlockFace.SELF;
+                }
 
-        default: break;
+            default:
+                break;
         }
     }
 

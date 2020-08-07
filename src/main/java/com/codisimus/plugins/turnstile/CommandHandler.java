@@ -337,9 +337,7 @@ public class CommandHandler implements CommandExecutor {
                             return null;
                     }
                 case MATERIAL:
-                    return argument.matches("[0-9]+")
-                            ? Material.getMaterial(Integer.parseInt(argument))
-                            : Material.matchMaterial(argument);
+                    return Material.matchMaterial(argument);
                 case PLAYER:
                     return Bukkit.getPlayer(argument);
                 case OFFLINEPLAYER:
