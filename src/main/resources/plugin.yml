@@ -6,6 +6,7 @@ website: www.codisimus.com
 description: Charge players money/items to enter an area
 startup: postworld
 softdepend: [Vault]
+api-version: 1.13
 commands:
   ts:
     description: Used to setup and manage Turnstiles
